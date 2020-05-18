@@ -21,7 +21,7 @@ let tarefas = [
     id: 4,
     texto: "Pagar boleto",
     prioridade: 3,
-    feito: true,
+    feito: false,
   },
 ];
 
@@ -38,12 +38,15 @@ const render = (tarefas) => {
   for (const tarefa of tarefas) {
     //criando uma linha na tabela
     let row = document.createElement("tr");
-
+    if (tarefa.feito) {
+      row.classList.add("done");
+    }
     //criar o input checkbox
     let checkbox = document.createElement("input");
     checkbox.setAttribute("type", "checkbox");
-    checkbox.setAttribute("onchange", "toggle()");
-
+    checkbox.checked = tarefa.feito;
+    checkbox.addEventListener("click", changeStatus);
+    checkbox.id = "chk_" + tarefa.id;
     // criar a célula que vai conter o checkbox
     let tdCheck = document.createElement("td");
     tdCheck.appendChild(checkbox);
@@ -75,8 +78,28 @@ const render = (tarefas) => {
     row.appendChild(tdAcoes);
 
     //adicionar a linha a tabela
+
     table.appendChild(row);
   }
+};
+
+const changeStatus = (evt) => {
+  let id = Number(evt.target.id.replace("chk_", ""));
+
+  toggle(id);
+
+  render(tarefas);
+};
+
+const toggle = (id) => {
+  let t;
+  for (const tarefa of tarefas) {
+    if (tarefa.id == id) {
+      t = tarefa;
+    }
+  }
+  t.feito ? (t.feito = false) : (t.feito = true);
+  return t;
 };
 
 const onDeleteClick = (evt) => {
@@ -154,17 +177,6 @@ form.addEventListener("submit", (e) => {
   //limpar campo
   document.getElementById("tf_2do").value = "";
 });
-
-const toggle = (id) => {
-  let t;
-  for (const tarefa of tarefas) {
-    if (tarefa.id == id) {
-      t = tarefa;
-    }
-  }
-  t.feito ? (t.feito = false) : (t.feito = true);
-  return t;
-};
 
 let td = document.getElementsByTagName("td");
 
