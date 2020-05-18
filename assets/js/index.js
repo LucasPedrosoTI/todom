@@ -25,6 +25,9 @@ let tarefas = [
   },
 ];
 
+//objeto de prioridade
+let prioridades = { 1: "baixa", 2: "média", 3: "alta" };
+
 //capturar elementos importantes da pagina
 
 const render = (tarefas) => {
@@ -54,11 +57,19 @@ const render = (tarefas) => {
 
     row.appendChild(tdTexto);
 
+    //criar td prioridade
+    let tdPrioridade = document.createElement("td");
+    tdPrioridade.innerText = prioridades[tarefa.prioridade];
+
+    row.appendChild(tdPrioridade);
+
     //criar td de ações
     let tdAcoes = document.createElement("td");
     let i = document.createElement("i");
     i.className = "material-icons";
     i.innerText = "delete";
+    i.addEventListener("click", onDeleteClick);
+    i.id = tarefa.id;
 
     tdAcoes.appendChild(i);
     row.appendChild(tdAcoes);
@@ -68,9 +79,30 @@ const render = (tarefas) => {
   }
 };
 
+const onDeleteClick = (evt) => {
+  //capturar id a tarefa a ser removida
+  let id = Number(evt.target["id"]);
+
+  //confirmar exclusão
+  if (!window.confirm(`Tem certeza que deseja excluir a tarefa?`)) {
+    //usurioa clicou em não, abortando
+    return;
+  }
+
+  destroy(id);
+
+  render(tarefas);
+};
+
+const destroy = (id) => {
+  tarefas = tarefas.filter((t) => t.id != id);
+};
+
 const create = (texto, prioridade) => {
+  let id = tarefas.length == 0 ? 1 : tarefas[tarefas.length - 1].id + 1;
+
   return {
-    id: tarefas[tarefas.length - 1].id + 1,
+    id,
     texto,
     prioridade,
     feito: false,
@@ -79,19 +111,17 @@ const create = (texto, prioridade) => {
 
 let form = document.getElementById("form");
 
-// FORMA 1
-// form.onsubmit = (e) => {
-//   e.preventDefault();
-// };
-
 // FORMA 2
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
   //capturar texto digitado pelo usuário
-  let texto = document.getElementById("tf_2do").value || "Sem nome";
+  let texto = document.getElementById("tf_2do").value;
 
+  if (!texto) {
+    return window.alert("De um nome para sua tarefa");
+  }
   //verificar se existe prioridade setada no texto
   let strInicio = texto.substr(0, 3);
   let prioridade;
@@ -182,4 +212,25 @@ const create = () => {
     e.preventDefault();
   };
 };
+
 */
+// const setPrioridade = (prio) => {
+//   let prioridade;
+//   switch (prio) {
+//     case 2:
+//       prioridade = "média";
+//       break;
+//     case 3:
+//       prioridade = "alta";
+//       break;
+//     default:
+//       prioridade = "baixa";
+//       break;
+//   }
+//   return prioridade;
+// };
+
+// FORMA 1
+// form.onsubmit = (e) => {
+//   e.preventDefault();
+// };
